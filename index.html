@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>ผู้ยำเกรง · Bible Spyfall</title>
+<meta name="theme-color" content="#17110C" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Trirong:wght@500;600;700&family=Sarabun:wght@400;500;600;700&family=Kanit:wght@500;600;700&display=swap');
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html,body{ margin:0; padding:0; }
+
+.bs-root{
+  --ink:#17110C; --wall:#221811; --velvet:#2F2117; --frame:#0E0A07;
+  --parch:#EDE3CE; --parch-dim:#C9BCA1;
+  --gold:#C9A24B; --gold-hi:#EAC976; --gold-deep:#8A6B2E;
+  --ot:#B6552F; --ot-soft:#7A3A22;
+  --nt:#5E9A8C; --nt-soft:#3C6359;
+  --danger:#B0432F;
+  font-family:'Sarabun',sans-serif;
+  color:var(--parch);
+  min-height:100dvh;
+  background:radial-gradient(120% 80% at 50% -10%, #3A2A1C 0%, var(--wall) 38%, var(--ink) 100%);
+  background-attachment:fixed;
+  display:flex; justify-content:center;
+  padding:18px 14px 44px;
+}
+.bs-stage{ width:100%; max-width:480px; }
+.bs-display{ font-family:'Trirong',serif; }
+.bs-eyebrow{ font-family:'Kanit',sans-serif; font-weight:600; font-size:11px;
+  letter-spacing:.32em; text-transform:uppercase; color:var(--gold); opacity:.85; }
+
+.bs-mast{ text-align:center; padding:6px 0 18px; }
+.bs-mast h1{ font-family:'Trirong',serif; font-weight:700; font-size:30px; line-height:1.05;
+  margin:6px 0 2px; color:var(--parch); text-shadow:0 1px 0 #000, 0 0 22px rgba(201,162,75,.18); }
+.bs-mast .gild{ color:var(--gold-hi); }
+.bs-rule{ height:1px; width:64px; margin:10px auto 0; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+
+.bs-panel{ background:linear-gradient(180deg,#2A1E15,#211710); border:1px solid #3D2C1E; border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04); padding:20px 18px; }
+.bs-panel + .bs-panel{ margin-top:14px; }
+
+.bs-btn{ width:100%; border:none; cursor:pointer; font-family:'Kanit',sans-serif; font-weight:600; font-size:16px;
+  letter-spacing:.02em; padding:15px 18px; border-radius:12px; transition:transform .12s ease, filter .12s ease; }
+.bs-btn:active{ transform:translateY(1px) scale(.995); }
+.bs-btn-gold{ color:#2A1B07; background:linear-gradient(180deg,var(--gold-hi),var(--gold));
+  box-shadow:0 8px 18px rgba(201,162,75,.28), inset 0 1px 0 rgba(255,255,255,.5); }
+.bs-btn-gold:hover{ filter:brightness(1.05); }
+.bs-btn-ghost{ color:var(--parch); background:transparent; border:1px solid #4A3725; }
+.bs-btn-ghost:hover{ border-color:var(--gold-deep); color:var(--gold-hi); }
+.bs-btn:disabled{ opacity:.4; cursor:not-allowed; }
+.bs-btn-row{ display:flex; gap:10px; } .bs-btn-row .bs-btn{ flex:1; }
+
+.bs-field label{ display:block; font-family:'Kanit',sans-serif; font-weight:500; font-size:13px;
+  letter-spacing:.04em; color:var(--parch-dim); margin:0 0 7px; }
+.bs-input{ width:100%; padding:14px 16px; border-radius:11px; background:#19110B; border:1px solid #463322;
+  color:var(--parch); font-family:'Sarabun',sans-serif; font-size:17px; outline:none; }
+.bs-input:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,162,75,.15); }
+.bs-code-input{ text-align:center; font-family:'Kanit',sans-serif; font-weight:700; font-size:30px; letter-spacing:.5em; padding-left:.5em; }
+
+.bs-step{ display:flex; align-items:center; gap:14px; }
+.bs-step button{ width:46px; height:46px; flex:0 0 46px; border-radius:50%; border:1px solid #4A3725;
+  background:#1B130C; color:var(--gold-hi); font-size:22px; font-family:'Kanit'; cursor:pointer; }
+.bs-step button:active{ transform:scale(.93); }
+.bs-step .val{ flex:1; text-align:center; font-family:'Trirong',serif; font-weight:700; }
+.bs-step .val b{ font-size:34px; color:var(--parch); }
+.bs-step .val span{ display:block; font-family:'Kanit'; font-size:11px; letter-spacing:.18em; color:var(--gold); opacity:.8; margin-top:-2px; }
+.bs-auto-tag{ font-family:'Kanit'; font-size:11px; letter-spacing:.05em; color:var(--nt);
+  background:rgba(94,154,140,.12); border:1px solid rgba(94,154,140,.3); padding:2px 8px; border-radius:20px; margin-left:8px; }
+
+/* difficulty segmented */
+.bs-diff{ display:flex; gap:8px; }
+.bs-diff button{ flex:1; padding:12px 6px; border-radius:11px; cursor:pointer; font-family:'Kanit'; font-weight:600;
+  font-size:14px; color:var(--parch-dim); background:#1C140D; border:1px solid #3D2C1E; transition:.15s; }
+.bs-diff button.on{ color:var(--gold-hi); border-color:var(--gold); background:#241A11; box-shadow:inset 0 0 0 1px rgba(201,162,75,.3); }
+.bs-diff button .ic{ display:block; font-size:20px; margin-bottom:3px; }
+.bs-diff-desc{ font-size:12.5px; color:var(--parch-dim); line-height:1.5; margin:10px 2px 0; text-align:center; }
+
+/* set chooser */
+.bs-set{ display:flex; align-items:center; gap:12px; padding:13px 14px; border-radius:12px; cursor:pointer;
+  border:1px solid #3D2C1E; background:#1C140D; margin-bottom:9px; transition:border-color .15s; }
+.bs-set.sel{ border-color:var(--gold); background:#241A11; box-shadow:inset 0 0 0 1px rgba(201,162,75,.35); }
+.bs-set.lock{ opacity:.5; cursor:not-allowed; }
+.bs-set .ico{ font-size:24px; } .bs-set .nm{ flex:1; }
+.bs-set .nm b{ font-family:'Kanit'; font-weight:600; font-size:15px; display:block; }
+.bs-set .nm small{ color:var(--parch-dim); font-size:12px; }
+.bs-set .chk{ color:var(--gold-hi); font-size:18px; }
+
+/* board */
+.bs-board{ display:flex; gap:12px; }
+.bs-wing{ flex:1; border-radius:13px; padding:12px 11px; border:1px solid #3A2A1C; background:#1B130C; transition:all .35s ease; }
+.bs-wing h4{ margin:0 0 9px; font-family:'Kanit'; font-weight:600; font-size:12px; letter-spacing:.12em;
+  text-align:center; padding-bottom:7px; border-bottom:1px dashed #4A3725; }
+.bs-wing.ot h4{ color:var(--ot); } .bs-wing.nt h4{ color:var(--nt); }
+.bs-wing ul{ list-style:none; margin:0; padding:0; }
+.bs-wing li{ font-size:13px; padding:5px 2px; color:var(--parch-dim); display:flex; gap:6px; align-items:center; }
+.bs-wing li .e{ font-size:14px; }
+.bs-wing.dim{ opacity:.20; filter:grayscale(.6) brightness(.7); }
+.bs-wing.ot.live{ border-color:var(--ot); box-shadow:0 0 22px rgba(182,85,47,.18); }
+.bs-wing.nt.live{ border-color:var(--nt); box-shadow:0 0 22px rgba(94,154,140,.18); }
+
+/* lobby */
+.bs-codebig{ text-align:center; font-family:'Kanit'; font-weight:700; font-size:50px; letter-spacing:.22em;
+  color:#2A1B07; background:linear-gradient(180deg,var(--gold-hi),var(--gold)); border-radius:14px;
+  padding:12px 0 10px; margin:4px 0 2px; user-select:all; box-shadow:inset 0 1px 0 rgba(255,255,255,.5); }
+.bs-players{ list-style:none; margin:12px 0 0; padding:0; }
+.bs-players li{ display:flex; align-items:center; gap:10px; padding:11px 13px; margin-top:8px;
+  background:#1C140D; border:1px solid #3A2A1C; border-radius:11px; }
+.bs-players li .dot{ width:9px;height:9px;border-radius:50%;background:#7FC9A8;box-shadow:0 0 8px #7FC9A8; }
+.bs-players li .seat{ margin-left:auto; font-size:12px; color:var(--gold); font-family:'Kanit'; }
+
+/* portrait card */
+.bs-cardwrap{ perspective:1400px; }
+.bs-card{ position:relative; width:100%; max-width:300px; margin:0 auto; aspect-ratio:9/16; border-radius:14px;
+  background:linear-gradient(160deg,#241A12,#181009); border:2px solid var(--gold-deep);
+  box-shadow:0 22px 50px rgba(0,0,0,.55), inset 0 0 0 6px #120C07, inset 0 0 0 7px var(--gold-deep);
+  padding:14px 14px 16px; display:flex; flex-direction:column; animation:cardIn .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes cardIn{ from{opacity:0; transform:rotateY(14deg) translateY(10px);} to{opacity:1; transform:none;} }
+.bs-art{ position:relative; flex:1; border-radius:8px; overflow:hidden; border:1px solid var(--gold-deep);
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(120% 90% at 30% 18%, #6B4E2E 0%, #3A2817 45%, #160F09 100%); }
+.bs-art img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.bs-art .emo{ font-size:96px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+.bs-art .ph{ position:absolute; bottom:7px; left:0; right:0; text-align:center; font-family:'Kanit'; font-size:9px;
+  letter-spacing:.22em; color:var(--gold-hi); opacity:.5; }
+.bs-art.spy{ background:radial-gradient(120% 90% at 50% 30%,#3A2630,#1A1012 70%); }
+.bs-loc{ margin:10px auto 0; text-align:center; }
+.bs-loc small{ display:block; font-family:'Kanit'; font-size:9px; letter-spacing:.2em; color:var(--gold); opacity:.7; margin-bottom:1px; }
+.bs-loc b{ font-family:'Trirong',serif; font-weight:600; font-size:15px; color:var(--gold-hi); }
+.bs-plate{ margin:11px auto 0; padding:7px 16px; border-radius:6px; background:linear-gradient(180deg,#B89043,#876623);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 3px 8px rgba(0,0,0,.4); text-align:center; min-width:60%; }
+.bs-plate b{ font-family:'Trirong',serif; font-weight:700; font-size:20px; color:#241404; }
+.bs-card .story{ font-size:13px; color:var(--parch-dim); text-align:center; margin:9px 4px 0; line-height:1.45; }
+.bs-card .heart{ margin:10px 2px 2px; padding:9px 11px; border-radius:9px; background:rgba(201,162,75,.08);
+  border:1px solid rgba(201,162,75,.22); font-family:'Trirong',serif; font-style:italic; font-size:14px;
+  color:var(--gold-hi); text-align:center; line-height:1.5; }
+.bs-card .heart small{ display:block; font-family:'Kanit'; font-style:normal; font-size:9px; letter-spacing:.2em;
+  color:var(--gold); opacity:.7; margin-bottom:4px; }
+.bs-mission{ margin-top:9px; font-family:'Kanit'; font-size:11.5px; text-align:center; color:var(--danger); letter-spacing:.03em; }
+
+/* timer */
+.bs-timer{ text-align:center; padding:6px 0 4px; }
+.bs-ring{ width:172px; height:172px; margin:6px auto 14px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; }
+.bs-ring::before{ content:""; position:absolute; inset:12px; border-radius:50%;
+  background:radial-gradient(circle at 40% 32%,#2A1E14,#160F09); box-shadow:inset 0 4px 14px rgba(0,0,0,.6); }
+.bs-ring .t{ position:relative; font-family:'Trirong',serif; font-weight:700; font-size:44px; color:var(--parch); }
+.bs-ring.warn .t{ color:var(--gold-hi); }
+.bs-ring.over .t{ color:var(--danger); font-size:28px; }
+
+/* reveal */
+.bs-answer{ text-align:center; margin-bottom:8px; }
+.bs-answer .e{ font-size:54px; }
+.bs-answer h3{ font-family:'Trirong',serif; font-weight:700; font-size:26px; margin:4px 0 2px; }
+.bs-roster{ list-style:none; margin:14px 0 0; padding:0; }
+.bs-roster li{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; margin-bottom:7px; background:#1C140D; border:1px solid #3A2A1C; }
+.bs-roster li.spy{ background:rgba(176,67,47,.12); border-color:rgba(176,67,47,.5); }
+.bs-roster .seatn{ width:30px; height:30px; flex:0 0 30px; border-radius:50%; background:#2A1E14; color:var(--gold-hi);
+  display:flex; align-items:center; justify-content:center; font-family:'Kanit'; font-weight:600; font-size:13px; }
+.bs-roster .rn{ flex:1; font-family:'Kanit'; font-weight:500; font-size:15px; }
+.bs-roster .badge{ font-family:'Kanit'; font-size:11px; letter-spacing:.1em; color:var(--danger); }
+
+.bs-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-family:'Kanit'; font-size:12px; color:var(--parch-dim); margin-bottom:14px; flex-wrap:wrap; }
+.bs-chip{ font-family:'Kanit'; font-size:12px; color:var(--gold-hi); background:rgba(201,162,75,.1);
+  border:1px solid rgba(201,162,75,.25); padding:4px 11px; border-radius:20px; }
+.bs-note{ font-size:12px; color:var(--parch-dim); line-height:1.5; text-align:center; margin-top:12px; }
+.bs-verse{ text-align:center; font-family:'Trirong',serif; font-style:italic; font-size:13px; color:var(--gold); opacity:.65; margin-top:18px; }
+.bs-back{ background:none; border:none; color:var(--parch-dim); font-family:'Kanit'; font-size:13px; cursor:pointer;
+  padding:8px; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.bs-back:hover{ color:var(--gold-hi); }
+.bs-err{ background:rgba(176,67,47,.14); border:1px solid rgba(176,67,47,.45); color:#F2C9BE; padding:10px 13px; border-radius:11px; font-size:13.5px; margin-top:12px; }
+.bs-spin{ width:34px;height:34px;border-radius:50%;border:3px solid #3D2C1E;border-top-color:var(--gold);animation:sp 1s linear infinite;margin:26px auto; }
+@keyframes sp{ to{ transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){ .bs-card{ animation:none; } *{ transition:none!important; } }
+</style>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ============================================================
+   ⚙️  วาง firebaseConfig ของ KC ตรงนี้
+   (Project settings → Your apps → Web </> → คัดลอกมาวางทับ)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  databaseURL: "https://PASTE_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "PASTE_PROJECT",
+  storageBucket: "PASTE_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+
+const IMG_BASE = './img/';
+const LS_LOGIN = 'bsf_login';
+const LS_UID   = 'bsf_uid';
+
+const DIFFS = {
+  easy:  { label:'ง่าย',    ic:'🕯️', desc:'หรี่แสงฝั่งพันธสัญญาที่ไม่มีคำตอบ — ช่วยสายลับเดาง่ายขึ้น' },
+  hard:  { label:'ยาก',    ic:'🌑', desc:'ทั้งสองฝั่งสว่างเท่ากัน ไม่มีใบ้พันธสัญญา — สายลับต้องเดาเอง' },
+  event: { label:'อีเวนต์', ic:'🎲', desc:'คละเรื่องจากทุกชุดตรา ฝั่งละสูงสุด 10 สถานที่ — บอร์ดใหญ่ ท้าทายสุด' },
+};
+
+/* ---------- helpers ---------- */
+const todayStr = () => new Date().toISOString().slice(0,10);
+function getUid(){ let u=localStorage.getItem(LS_UID);
+  if(!u){ u=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'u'+Date.now().toString(36)+Math.random().toString(16).slice(2); localStorage.setItem(LS_UID,u); } return u; }
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const computeMinutes = p => Math.min(9, Math.floor((p-4)/2)+5);
+const computeSpies   = p => (p>=10?2:1);
+const mmss = s => { s=Math.max(0,s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+function findLoc(L,id){ for(const s of (L.sets||[])){ const l=(s.locations||[]).find(x=>x.id===id); if(l) return l; } return null; }
+function readyAll(L){ const out=[]; (L.sets||[]).forEach(s=>(s.locations||[]).forEach(l=>{ if(l.ready) out.push(l); })); return out; }
+
+/* ---------- firebase ---------- */
+let db=null, fbReady=false, fbError=null;
+const TS = (window.firebase&&firebase.database) ? firebase.database.ServerValue.TIMESTAMP : null;
+try{ if(firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('PASTE')){ firebase.initializeApp(firebaseConfig); db=firebase.database(); fbReady=true; } }
+catch(e){ fbError=e.message; console.error(e); }
+
+/* ======================= APP ======================= */
+function App(){
+  const uid = useRef(getUid()).current;
+  const [name,setName]=useState('');
+  const [screen,setScreen]=useState('login');   // login | home | join | create | room
+  const [code,setCode]=useState(null);
+  const [room,setRoom]=useState(null);
+  const [L,setL]=useState(null);
+  const [locErr,setLocErr]=useState(null);
+  const [offset,setOffset]=useState(0);
+  const [,setTick]=useState(0);
+  const [cardOpen,setCardOpen]=useState(true);
+  const [err,setErr]=useState('');
+
+  useEffect(()=>{ try{ const o=JSON.parse(localStorage.getItem(LS_LOGIN)||'null');
+    if(o && o.date===todayStr() && o.name){ setName(o.name); setScreen('home'); } else localStorage.removeItem(LS_LOGIN);
+  }catch(e){} },[]);
+
+  useEffect(()=>{ fetch('./locations.json',{cache:'no-store'})
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(setL).catch(e=>setLocErr(e.message)); },[]);
+
+  useEffect(()=>{ if(!fbReady) return; const ref=db.ref('.info/serverTimeOffset');
+    const cb=ref.on('value',s=>setOffset(s.val()||0)); return ()=>ref.off('value',cb); },[]);
+
+  useEffect(()=>{ if(!fbReady||!code) return; const ref=db.ref('rooms/'+code);
+    const cb=ref.on('value',s=>{ const v=s.val();
+      if(!v){ setRoom(null); setCode(null); setScreen('home'); setErr('ห้องถูกปิดแล้ว'); return; }
+      setRoom(v); setScreen('room'); });
+    return ()=>ref.off('value',cb); },[code]);
+
+  useEffect(()=>{ const id=setInterval(()=>setTick(t=>t+1),400); return ()=>clearInterval(id); },[]);
+  useEffect(()=>{ const f=()=>document.visibilityState==='visible'&&setTick(t=>t+1);
+    document.addEventListener('visibilitychange',f); return ()=>document.removeEventListener('visibilitychange',f); },[]);
+  useEffect(()=>{ let lock=null; const a=async()=>{ try{ if('wakeLock' in navigator && room && room.status==='playing') lock=await navigator.wakeLock.request('screen'); }catch(e){} };
+    a(); const f=()=>document.visibilityState==='visible'&&a(); document.addEventListener('visibilitychange',f);
+    return ()=>{ document.removeEventListener('visibilitychange',f); if(lock) try{lock.release();}catch(e){} };
+  },[room&&room.status]);
+
+  const serverNow=()=>Date.now()+offset;
+
+  function doLogin(n){ n=(n||'').trim(); if(!n) return; setName(n);
+    localStorage.setItem(LS_LOGIN,JSON.stringify({name:n,date:todayStr()})); setScreen('home'); }
+  function logout(){ localStorage.removeItem(LS_LOGIN); setName(''); setCode(null); setRoom(null); setScreen('login'); }
+
+  async function uniqueCode(){ for(let i=0;i<20;i++){ const c=String(Math.floor(1000+Math.random()*9000));
+    const s=await db.ref('rooms/'+c).get(); if(!s.exists()) return c; } return String(Math.floor(1000+Math.random()*9000)); }
+
+  async function createRoom(difficulty,setId){ setErr('');
+    try{ const c=await uniqueCode();
+      await db.ref('rooms/'+c).set({ host:uid, status:'lobby', difficulty,
+        setId:(difficulty==='event'?null:setId), autoTune:true, minutesManual:7, spiesManual:1,
+        createdAt:TS, players:{ [uid]:{ name, seat:0, joinedAt:TS } } });
+      setCode(c);
+    }catch(e){ setErr('สร้างห้องไม่สำเร็จ: '+e.message); } }
+
+  async function joinRoom(c){ setErr(''); c=(c||'').trim();
+    if(!/^\d{4}$/.test(c)){ setErr('กรุณาใส่รหัสห้อง 4 หลัก'); return; }
+    try{ const snap=await db.ref('rooms/'+c).get();
+      if(!snap.exists()){ setErr('ไม่พบห้องรหัสนี้'); return; }
+      const rm=snap.val();
+      if(rm.players&&rm.players[uid]){ setCode(c); return; }
+      if(rm.status!=='lobby'){ setErr('ห้องนี้เริ่มเล่นไปแล้ว'); return; }
+      const seat=Object.keys(rm.players||{}).length;
+      await db.ref('rooms/'+c+'/players/'+uid).set({ name, seat, joinedAt:TS }); setCode(c);
+    }catch(e){ setErr('เข้าห้องไม่สำเร็จ: '+e.message); } }
+
+  async function leaveRoom(){ if(!code) return; const c=code;
+    try{ const isHost=room&&room.host===uid; const others=Object.keys((room&&room.players)||{}).filter(i=>i!==uid);
+      if(isHost&&others.length===0) await db.ref('rooms/'+c).remove();
+      else await db.ref('rooms/'+c+'/players/'+uid).remove();
+    }catch(e){} setCode(null); setRoom(null); setScreen('home'); }
+
+  async function deal(){
+    if(!room||room.host!==uid||!L) return;
+    const ids=Object.keys(room.players||{}); if(ids.length<4){ setErr('ต้องมีผู้เล่นอย่างน้อย 4 คน'); return; }
+    let answer=null, boardIds=[];
+    if(room.difficulty==='event'){
+      const rd=readyAll(L);
+      const ot=shuffle(rd.filter(l=>l.testament==='OT')).slice(0,10);
+      const nt=shuffle(rd.filter(l=>l.testament==='NT')).slice(0,10);
+      const board=[...ot,...nt];
+      if(!board.length){ setErr('ยังไม่มีสถานที่พร้อมเล่นสำหรับโหมดอีเวนต์'); return; }
+      answer=pick(board); boardIds=board.map(l=>l.id);
+    } else {
+      const set=(L.sets||[]).find(s=>s.id===room.setId);
+      const rd=(set&&set.locations||[]).filter(l=>l.ready);
+      if(!rd.length){ setErr('ชุดนี้ยังไม่มีสถานที่พร้อมเล่น'); return; }
+      answer=pick(rd); boardIds=(set.locations||[]).map(l=>l.id);
+    }
+    const count=ids.length;
+    const minutes=room.autoTune!==false?computeMinutes(count):(room.minutesManual||computeMinutes(count));
+    const spies  =room.autoTune!==false?computeSpies(count):(room.spiesManual||computeSpies(count));
+    const order=shuffle(ids); const spySet=new Set(order.slice(0,spies));
+    const roleIdx=shuffle(answer.roles.map((_,i)=>i));
+    const th=(L.spyThoughts&&L.spyThoughts.length)?L.spyThoughts:['...'];
+    const up={}; let r=0;
+    ids.forEach(id=>{ const isSpy=spySet.has(id); up['players/'+id+'/isSpy']=isSpy;
+      if(isSpy){ up['players/'+id+'/roleIndex']=null; up['players/'+id+'/spyThought']=pick(th); }
+      else{ up['players/'+id+'/roleIndex']=roleIdx[r%roleIdx.length]; r++; up['players/'+id+'/spyThought']=null; } });
+    up['location']=answer.id; up['board']=boardIds; up['minutes']=minutes; up['spies']=spies;
+    up['status']='playing'; up['roundStartAt']=TS;
+    try{ await db.ref('rooms/'+code).update(up); setCardOpen(true); }
+    catch(e){ setErr('แจกการ์ดไม่สำเร็จ: '+e.message); } }
+
+  const reveal    =()=> room&&room.host===uid && db.ref('rooms/'+code).update({status:'revealed'});
+  const backLobby =()=> room&&room.host===uid && db.ref('rooms/'+code).update({status:'lobby',location:null,board:null,roundStartAt:null});
+  const setTune   =patch=> room&&room.host===uid && db.ref('rooms/'+code).update(patch);
+
+  if(!fbReady)   return <SetupNeeded error={fbError}/>;
+  if(locErr)     return <LocError msg={locErr}/>;
+  if(!L)         return <Loading/>;
+
+  if(screen==='login')  return <Login onLogin={doLogin}/>;
+  if(screen==='home')   return <Home name={name} onCreate={()=>setScreen('create')} onJoin={()=>setScreen('join')} onLogout={logout} err={err}/>;
+  if(screen==='join')   return <Join onJoin={joinRoom} onBack={()=>{setErr('');setScreen('home');}} err={err}/>;
+  if(screen==='create') return <Create L={L} onCreate={createRoom} onBack={()=>setScreen('home')} err={err}/>;
+
+  if(screen==='room'&&room){
+    const me=(room.players||{})[uid]; const isHost=room.host===uid;
+    if(room.status==='lobby')
+      return <Lobby code={code} room={room} L={L} isHost={isHost} uid={uid} onDeal={deal} onLeave={leaveRoom} onTune={setTune} err={err}/>;
+    const boardLocs=(room.board||[]).map(id=>findLoc(L,id)).filter(Boolean);
+    const answer=findLoc(L,room.location);
+    let remaining=room.minutes*60;
+    if(typeof room.roundStartAt==='number') remaining=room.minutes*60-Math.floor((serverNow()-room.roundStartAt)/1000);
+    return <Game room={room} L={L} me={me} isHost={isHost} answer={answer} boardLocs={boardLocs}
+                 remaining={remaining} cardOpen={cardOpen} setCardOpen={setCardOpen}
+                 onReveal={reveal} onDeal={deal} onBackLobby={backLobby} onLeave={leaveRoom} err={err}/>;
+  }
+  return <Loading/>;
+}
+
+/* ======================= COMPONENTS ======================= */
+function Mast(){ return (
+  <div className="bs-mast">
+    <p className="bs-eyebrow">เกมจับสายลับฉบับพระคัมภีร์</p>
+    <h1>ผู้<span className="gild">ยำเกรง</span></h1>
+    <div className="bs-rule"/>
+  </div>
+); }
+
+function RoleArt({img,emoji,spy}){
+  const [e,setE]=useState(false);
+  return (
+    <div className={'bs-art'+(spy?' spy':'')}>
+      {img && !e
+        ? <img src={IMG_BASE+img} onError={()=>setE(true)} alt=""/>
+        : <><span className="emo">{emoji}</span><span className="ph">ภาพสีน้ำมัน · รออัปเดต</span></>}
+    </div>
+  );
+}
+
+function Board({locs,live}){
+  const ot=locs.filter(l=>l.testament==='OT');
+  const nt=locs.filter(l=>l.testament==='NT');
+  const wing=(side,list)=>{
+    const isLive=live===side, dim=live&&live!==side;
+    return (
+      <div className={`bs-wing ${side.toLowerCase()} ${isLive?'live':''} ${dim?'dim':''}`}>
+        <h4>{side==='OT'?'พันธสัญญาเดิม':'พันธสัญญาใหม่'}</h4>
+        <ul>{list.length?list.map(l=>(
+          <li key={l.id} style={{opacity:l.ready?1:.42}}>
+            <span className="e">{l.emoji}</span>{l.name}
+            {!l.ready&&<span style={{marginLeft:'auto',fontSize:11}}>🔒</span>}
+          </li>
+        )):<li style={{opacity:.5}}>— ยังไม่มี —</li>}</ul>
+      </div>
+    );
+  };
+  return <div className="bs-board">{wing('OT',ot)}{wing('NT',nt)}</div>;
+}
+
+function Ring({remaining,total}){
+  const pct=total?Math.max(0,remaining/total):0; const deg=pct*360;
+  const warn=remaining<=30&&remaining>0, over=remaining<=0;
+  return (
+    <div className={`bs-ring ${warn?'warn':''} ${over?'over':''}`}
+      style={{background:`conic-gradient(${over?'#B0432F':'var(--gold)'} ${deg}deg, #3A2A1C ${deg}deg)`}}>
+      <span className="t">{over?'หมดเวลา':mmss(remaining)}</span>
+    </div>
+  );
+}
+
+function Login({onLogin}){
+  const [n,setN]=useState('');
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <Mast/>
+      <div className="bs-panel">
+        <p className="bs-eyebrow" style={{marginBottom:14}}>ลงชื่อเข้าเล่น</p>
+        <div className="bs-field" style={{marginBottom:16}}>
+          <label>เรียกคุณว่าอะไรดี?</label>
+          <input className="bs-input" placeholder="พิมพ์ชื่อของคุณ" value={n} maxLength={20}
+            onChange={e=>setN(e.target.value)} onKeyDown={e=>e.key==='Enter'&&onLogin(n)} autoFocus/>
+        </div>
+        <button className="bs-btn bs-btn-gold" disabled={!n.trim()} onClick={()=>onLogin(n)}>เข้าสู่เกม</button>
+        <p className="bs-note">ชื่อจะอยู่กับคุณจนกว่าจะเช็คเอ้าท์ หรือข้ามวันก็ล้างให้อัตโนมัติ</p>
+      </div>
+      <p className="bs-verse">“ความยำเกรงพระยาห์เวห์เป็นบ่อเกิดของความรู้” — สุภาษิต 1:7</p>
+    </div></div>
+  );
+}
+
+function Home({name,onCreate,onJoin,onLogout,err}){
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <Mast/>
+      <div className="bs-panel" style={{textAlign:'center'}}>
+        <p className="bs-eyebrow">ยินดีต้อนรับ</p>
+        <p className="bs-display" style={{fontSize:24,margin:'4px 0 20px'}}>สวัสดี {name} 👋</p>
+        <button className="bs-btn bs-btn-gold" style={{marginBottom:10}} onClick={onCreate}>＋ สร้างห้องใหม่ (หัวหน้าห้อง)</button>
+        <button className="bs-btn bs-btn-ghost" onClick={onJoin}>เข้าร่วมห้องด้วยรหัส</button>
+        {err&&<div className="bs-err">{err}</div>}
+      </div>
+      <button className="bs-back" style={{margin:'12px auto 0'}} onClick={onLogout}>⎋ เช็คเอ้าท์ (ออกจากระบบ)</button>
+    </div></div>
+  );
+}
+
+function Join({onJoin,onBack,err}){
+  const [c,setC]=useState('');
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <button className="bs-back" onClick={onBack}>‹ กลับ</button>
+      <div className="bs-panel">
+        <p className="bs-eyebrow" style={{marginBottom:14}}>เข้าร่วมห้อง</p>
+        <div className="bs-field" style={{marginBottom:16}}>
+          <label>ใส่รหัสห้อง 4 หลักจากเพื่อน</label>
+          <input className="bs-input bs-code-input" inputMode="numeric" placeholder="••••" value={c} maxLength={4}
+            onChange={e=>setC(e.target.value.replace(/\D/g,''))} onKeyDown={e=>e.key==='Enter'&&onJoin(c)} autoFocus/>
+        </div>
+        <button className="bs-btn bs-btn-gold" disabled={c.length!==4} onClick={()=>onJoin(c)}>เข้าห้อง</button>
+        {err&&<div className="bs-err">{err}</div>}
+      </div>
+    </div></div>
+  );
+}
+
+function Create({L,onCreate,onBack,err}){
+  const [diff,setDiff]=useState('easy');
+  const [setId,setSetId]=useState('s1');
+  const sets=L.sets||[];
+  const setReady=s=>(s.locations||[]).some(l=>l.ready);
+  const chosen=sets.find(s=>s.id===setId);
+  const previewLocs=diff==='event'? readyAll(L) : (chosen?chosen.locations:[]);
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <button className="bs-back" onClick={onBack}>‹ กลับ</button>
+
+      <div className="bs-panel">
+        <p className="bs-eyebrow" style={{marginBottom:12}}>ระดับความยาก</p>
+        <div className="bs-diff">
+          {Object.keys(DIFFS).map(k=>(
+            <button key={k} className={diff===k?'on':''} onClick={()=>setDiff(k)}>
+              <span className="ic">{DIFFS[k].ic}</span>{DIFFS[k].label}
+            </button>
+          ))}
+        </div>
+        <p className="bs-diff-desc">{DIFFS[diff].desc}</p>
+      </div>
+
+      {diff!=='event' && (
+        <div className="bs-panel">
+          <p className="bs-eyebrow" style={{marginBottom:12}}>เลือกชุดสถานที่</p>
+          {sets.map(s=>{ const ready=setReady(s);
+            return (
+              <div key={s.id} className={`bs-set ${setId===s.id?'sel':''} ${ready?'':'lock'}`}
+                onClick={()=>ready&&setSetId(s.id)}>
+                <span className="ico">{s.emoji}</span>
+                <span className="nm"><b>{s.name}</b><small>{ready?s.desc:'🔒 '+s.desc}</small></span>
+                {setId===s.id&&<span className="chk">✓</span>}
+              </div>
+            ); })}
+        </div>
+      )}
+
+      <div className="bs-panel">
+        <p className="bs-eyebrow" style={{marginBottom:6}}>หอศิลป์สถานที่</p>
+        <p className="bs-note" style={{margin:'0 0 12px'}}>
+          {diff==='event'
+            ? 'โหมดอีเวนต์จะสุ่มคละสถานที่ที่พร้อมเล่นจากทุกชุดตรามาเป็นบอร์ดใหม่ทุกรอบ'
+            : 'แต่ละชุดคละพันธสัญญาเดิม–ใหม่ · 🔒 = กำลังจัดทำ ยังไม่ออกในเกม'}
+        </p>
+        <Board locs={previewLocs} live={null}/>
+      </div>
+
+      <button className="bs-btn bs-btn-gold" style={{marginTop:14}} onClick={()=>onCreate(diff,setId)}>
+        สร้างห้อง · เข้าล็อบบี้
+      </button>
+      {err&&<div className="bs-err">{err}</div>}
+    </div></div>
+  );
+}
+
+function Lobby({code,room,L,isHost,uid,onDeal,onLeave,onTune,err}){
+  const players=Object.entries(room.players||{}).map(([id,p])=>({id,...p})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+  const count=players.length; const auto=room.autoTune!==false;
+  const dMin=auto?computeMinutes(count):(room.minutesManual||7);
+  const dSpy=auto?computeSpies(count):(room.spiesManual||1);
+  const d=DIFFS[room.difficulty]||DIFFS.easy;
+  const setName=room.difficulty==='event'?'อีเวนต์ (คละทุกชุด)':((L.sets||[]).find(s=>s.id===room.setId)||{}).name;
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <Mast/>
+      <div className="bs-panel">
+        <p className="bs-note" style={{margin:'0 0 4px'}}>รหัสห้อง — บอกเพื่อน ๆ ให้ใส่เพื่อเข้าห้อง</p>
+        <div className="bs-codebig">{code}</div>
+        <div style={{display:'flex',gap:8,justifyContent:'center',marginTop:10,flexWrap:'wrap'}}>
+          <span className="bs-chip">{d.ic} {d.label}</span>
+          <span className="bs-chip">{setName||'-'}</span>
+          <span className="bs-chip">👥 {count} คน</span>
+        </div>
+        <ul className="bs-players">
+          {players.map(p=>(
+            <li key={p.id}><span className="dot"/><span>{p.name}{p.id===uid&&' (คุณ)'}</span>
+              {p.id===room.host&&<span>👑</span>}<span className="seat">#{(p.seat??0)+1}</span></li>
+          ))}
+        </ul>
+      </div>
+
+      {isHost ? (
+        <div className="bs-panel">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <span className="bs-eyebrow">เวลา/สายลับ</span>
+            <button className="bs-btn bs-btn-ghost" style={{width:'auto',padding:'8px 14px',fontSize:13,marginTop:0}}
+              onClick={()=>onTune({autoTune:!auto,minutesManual:dMin,spiesManual:dSpy})}>{auto?'อัตโนมัติ ✓':'กำหนดเอง'}</button>
+          </div>
+          {!auto && (
+            <div style={{display:'flex',gap:12,marginTop:12}}>
+              <div className="bs-field" style={{flex:1}}>
+                <label>เวลา (นาที)</label>
+                <div className="bs-step">
+                  <button onClick={()=>onTune({minutesManual:Math.max(2,dMin-1)})}>−</button>
+                  <div className="val"><b>{dMin}</b></div>
+                  <button onClick={()=>onTune({minutesManual:Math.min(15,dMin+1)})}>＋</button>
+                </div>
+              </div>
+              <div className="bs-field" style={{flex:1}}>
+                <label>สายลับ</label>
+                <div className="bs-step">
+                  <button onClick={()=>onTune({spiesManual:Math.max(1,dSpy-1)})}>−</button>
+                  <div className="val"><b>{dSpy}</b></div>
+                  <button onClick={()=>onTune({spiesManual:Math.min(Math.max(1,count-2),dSpy+1)})}>＋</button>
+                </div>
+              </div>
+            </div>
+          )}
+          <p className="bs-note" style={{margin:'12px 0 0'}}>รอบนี้: ⏱️ {dMin} นาที · 🕵️ {dSpy} สายลับ {auto&&<span className="bs-auto-tag">อัตโนมัติ</span>}</p>
+          <button className="bs-btn bs-btn-gold" style={{marginTop:14}} disabled={count<4} onClick={onDeal}>
+            {count>=4?'🎴 เริ่มเกม · แจกบทบาท':`รออีก ${4-count} คน…`}
+          </button>
+          {err&&<div className="bs-err">{err}</div>}
+        </div>
+      ) : (
+        <div className="bs-panel"><p className="bs-note" style={{margin:0}}>⏳ รอหัวหน้าห้องเริ่ม…</p></div>
+      )}
+
+      <button className="bs-btn bs-btn-ghost" style={{marginTop:14,color:'#F2C9BE',borderColor:'rgba(176,67,47,.4)'}} onClick={onLeave}>ออกจากห้อง</button>
+      <p className="bs-note">ล็อกจอ/สลับแอปได้ — ไม่หลุดห้อง กลับมาเล่นต่อได้เลย</p>
+    </div></div>
+  );
+}
+
+function Game({room,L,me,isHost,answer,boardLocs,remaining,cardOpen,setCardOpen,onReveal,onDeal,onBackLobby,onLeave,err}){
+  const over=remaining<=0;
+  const playerCount=Object.keys(room.players||{}).length;
+
+  if(room.status==='revealed'){
+    const players=Object.entries(room.players||{}).map(([id,p])=>({id,...p})).sort((a,b)=>(a.seat??0)-(b.seat??0));
+    const spies=players.filter(p=>p.isSpy).map(p=>p.name);
+    return (
+      <div className="bs-root"><div className="bs-stage">
+        <div className="bs-panel">
+          <div className="bs-answer">
+            <p className="bs-eyebrow">สถานที่คือ</p>
+            <div className="e">{answer?answer.emoji:'❓'}</div>
+            <h3>{answer?answer.name:'—'}</h3>
+            <span className="bs-chip">{answer?(answer.testament==='OT'?'พันธสัญญาเดิม':'พันธสัญญาใหม่'):''}</span>
+          </div>
+          <ul className="bs-roster">
+            {players.map((p,i)=>{
+              const role=(!p.isSpy && answer && p.roleIndex!=null)?answer.roles[p.roleIndex]:null;
+              return (
+                <li key={p.id} className={p.isSpy?'spy':''}>
+                  <span className="seatn">{(p.seat??i)+1}</span>
+                  <span className="rn">{p.name} · {p.isSpy?'🕶️ คนแปลกหน้า':(role?`${role.e} ${role.n}`:'—')}</span>
+                  {p.isSpy&&<span className="badge">สายลับ</span>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        {isHost ? (
+          <div className="bs-btn-row">
+            <button className="bs-btn bs-btn-ghost" onClick={onBackLobby}>ล็อบบี้</button>
+            <button className="bs-btn bs-btn-gold" onClick={onDeal}>เริ่มรอบใหม่ ↻</button>
+          </div>
+        ) : <div className="bs-panel"><p className="bs-note" style={{margin:0}}>⏳ รอหัวหน้าห้องเริ่มรอบใหม่…</p></div>}
+        <button className="bs-back" style={{margin:'12px auto 0'}} onClick={onLeave}>ออกจากห้อง</button>
+        <p className="bs-verse">เล่นด้วยใจที่ยำเกรงพระเจ้า 🙏</p>
+      </div></div>
+    );
+  }
+
+  const role=(me&&me.roleIndex!=null&&answer)?answer.roles[me.roleIndex]:null;
+  const isSpy=me&&me.isSpy;
+  const live=room.difficulty==='easy'&&answer?answer.testament:null;
+
+  return (
+    <div className="bs-root"><div className="bs-stage">
+      <div className="bs-meta">
+        <span>ห้อง #{room.code||''}{room.host===me?'':''}</span>
+        <span>{DIFFS[room.difficulty]?DIFFS[room.difficulty].label:''} · {playerCount} คน · สายลับ {room.spies}</span>
+      </div>
+
+      <div className="bs-panel">
+        <div className="bs-timer">
+          <Ring remaining={remaining} total={room.minutes*60}/>
+          <p className="bs-eyebrow">{over?'หมดเวลา! ลงมติแล้วกดเฉลย':'ผลัดกันถาม–ตอบ ตามหาสายลับ'}</p>
+        </div>
+        {isHost && <button className="bs-btn bs-btn-gold" style={{marginTop:6}} onClick={onReveal}>เฉลย</button>}
+        {!isHost && over && <p className="bs-note" style={{margin:'6px 0 0'}}>⏳ รอหัวหน้าห้องกดเฉลย…</p>}
+      </div>
+
+      {cardOpen ? (
+        <div style={{marginTop:14}}>
+          {isSpy ? (
+            <div className="bs-cardwrap"><div className="bs-card">
+              <RoleArt img={answer ? answer.id+'/16.webp' : null} emoji="🕶️" spy/>
+              <div className="bs-plate"><b>คนแปลกหน้า</b></div>
+              <div className="heart"><small>ความในใจ</small>“{me.spyThought||'...'}”</div>
+              <p className="bs-mission">ภารกิจ: เนียนให้รอด แล้วทายว่าที่นี่คือที่ไหน</p>
+            </div></div>
+          ) : role ? (
+            <div className="bs-cardwrap"><div className="bs-card">
+              <RoleArt img={role.img} emoji={role.e}/>
+              <div className="bs-loc"><small>สถานที่ของฉาก (เฉลย)</small><b>{answer.emoji} {answer.name}</b></div>
+              <div className="bs-plate"><b>{role.n}</b></div>
+              <p className="story">{role.s}</p>
+              <div className="heart"><small>ความในใจ</small>“{role.t}”</div>
+            </div></div>
+          ) : <div className="bs-panel"><p className="bs-note" style={{margin:0}}>กำลังรับการ์ด…</p></div>}
+        </div>
+      ) : (
+        <div className="bs-panel">
+          <p className="bs-eyebrow" style={{marginBottom:4}}>บอร์ดอ้างอิง</p>
+          <p className="bs-note" style={{margin:'0 0 12px'}}>
+            {live? <>คำตอบอยู่ใน<b style={{color:answer.testament==='OT'?'var(--ot)':'var(--nt)'}}>{answer.testament==='OT'?' พันธสัญญาเดิม':' พันธสัญญาใหม่'}</b></>
+                 : 'โหมดนี้ทั้งสองฝั่งสว่าง — ไม่มีใบ้พันธสัญญา'}
+          </p>
+          <Board locs={boardLocs} live={live}/>
+        </div>
+      )}
+
+      <button className="bs-btn bs-btn-gold" style={{maxWidth:300,margin:'14px auto 0'}} onClick={()=>setCardOpen(o=>!o)}>
+        {cardOpen?'🙈 ปิดการ์ด (ดูบอร์ด)':'🎴 เปิดการ์ดของฉัน'}
+      </button>
+      {err&&<div className="bs-err">{err}</div>}
+      <p className="bs-note">ล็อกจอ/สลับแอปได้ — กลับมาเวลายังตรง การ์ดเด้งกลับมาเอง</p>
+    </div></div>
+  );
+}
+
+function Loading(){ return <div className="bs-root"><div className="bs-stage"><Mast/><div className="bs-spin"/></div></div>; }
+function SetupNeeded({error}){ return (
+  <div className="bs-root"><div className="bs-stage"><Mast/>
+    <div className="bs-panel"><p className="bs-eyebrow" style={{marginBottom:10}}>ยังไม่ได้ตั้งค่า Firebase</p>
+      <p className="bs-note" style={{textAlign:'left'}}>เปิด <b>index.html</b> แล้ววาง <b>firebaseConfig</b> ตรงคอมเมนต์ “วาง firebaseConfig ตรงนี้” (ต้น &lt;script&gt;)</p>
+      {error&&<div className="bs-err">{error}</div>}
+    </div>
+  </div></div>
+); }
+function LocError({msg}){ return (
+  <div className="bs-root"><div className="bs-stage"><Mast/>
+    <div className="bs-panel"><p className="bs-eyebrow" style={{marginBottom:10}}>โหลด locations.json ไม่ได้</p>
+      <p className="bs-note" style={{textAlign:'left'}}>วาง <b>locations.json</b> ไว้โฟลเดอร์เดียวกับ index.html และทดสอบบน <b>GitHub Pages</b> หรือ Live Server (double-click เปิดตรง ๆ เบราว์เซอร์จะบล็อก)</p>
+      <div className="bs-err">{msg}</div>
+    </div>
+  </div></div>
+); }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
