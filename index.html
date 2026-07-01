@@ -308,11 +308,13 @@ function App(){
   async function deal(){
     if(!room||room.host!==uid||!L) return;
     const ids=Object.keys(room.players||{}); if(ids.length<4){ setErr('ต้องมีผู้เล่นอย่างน้อย 4 คน'); return; }
+    const avoid=room.playedLocations||{};
     let answer=null, boardIds=[];
     if(room.difficulty==='event'){
       const rd=readyAll(L);
-      const ot=shuffle(rd.filter(l=>l.testament==='OT')).slice(0,10);
-      const nt=shuffle(rd.filter(l=>l.testament==='NT')).slice(0,10);
+      let pool=rd.filter(l=>!avoid[l.id]); if(!pool.length) pool=rd;
+      const ot=shuffle(pool.filter(l=>l.testament==='OT')).slice(0,10);
+      const nt=shuffle(pool.filter(l=>l.testament==='NT')).slice(0,10);
       const board=[...ot,...nt];
       if(!board.length){ setErr('ยังไม่มีสถานที่พร้อมเล่นสำหรับโหมดอีเวนต์'); return; }
       answer=pick(board); boardIds=board.map(l=>l.id);
@@ -320,7 +322,8 @@ function App(){
       const set=(L.sets||[]).find(s=>s.id===room.setId);
       const rd=(set&&set.locations||[]).filter(l=>l.ready);
       if(!rd.length){ setErr('ชุดนี้ยังไม่มีสถานที่พร้อมเล่น'); return; }
-      answer=pick(rd); boardIds=(set.locations||[]).map(l=>l.id);
+      let pool=rd.filter(l=>!avoid[l.id]); if(!pool.length) pool=rd;
+      answer=pick(pool); boardIds=(set.locations||[]).map(l=>l.id);
     }
     const count=ids.length;
     const minutes=room.autoTune!==false?computeMinutes(count):(room.minutesManual||computeMinutes(count));
@@ -337,7 +340,7 @@ function App(){
     try{ await db.ref('rooms/'+code).update(up); setCardOpen(true); }
     catch(e){ setErr('แจกการ์ดไม่สำเร็จ: '+e.message); } }
 
-  const reveal    =()=> room&&room.host===uid && db.ref('rooms/'+code).update({status:'revealed'});
+  const reveal    =()=> room&&room.host===uid && db.ref('rooms/'+code).update({status:'revealed', ['playedLocations/'+room.location]:true});
   const backLobby =()=> room&&room.host===uid && db.ref('rooms/'+code).update({status:'lobby',location:null,board:null,roundStartAt:null});
   const setTune   =patch=> room&&room.host===uid && db.ref('rooms/'+code).update(patch);
 
@@ -531,6 +534,7 @@ function Create({L,onCreate,onBack,err}){
 function Lobby({code,room,L,isHost,uid,onDeal,onLeave,onTune,err}){
   const players=Object.entries(room.players||{}).map(([id,p])=>({id,...p})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
   const count=players.length; const auto=room.autoTune!==false;
+  const playedCount=Object.keys(room.playedLocations||{}).length;
   const dMin=auto?computeMinutes(count):(room.minutesManual||7);
   const dSpy=auto?computeSpies(count):(room.spiesManual||1);
   const d=DIFFS[room.difficulty]||DIFFS.easy;
@@ -582,6 +586,13 @@ function Lobby({code,room,L,isHost,uid,onDeal,onLeave,onTune,err}){
             </div>
           )}
           <p className="bs-note" style={{margin:'12px 0 0'}}>รอบนี้: ⏱️ {dMin} นาที · 🕵️ {dSpy} สายลับ {auto&&<span className="bs-auto-tag">อัตโนมัติ</span>}</p>
+          {playedCount>0 && (
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:10,gap:8}}>
+              <span className="bs-note" style={{margin:0,textAlign:'left'}}>เล่นไปแล้ว {playedCount} สถานที่ในห้องนี้ (จะไม่ถูกแจกซ้ำ)</span>
+              <button className="bs-btn bs-btn-ghost" style={{width:'auto',padding:'8px 12px',fontSize:12,marginTop:0,whiteSpace:'nowrap'}}
+                onClick={()=>{ if(window.confirm('ล้างประวัติสถานที่ที่เคยเล่นในห้องนี้หรือไม่? รอบถัดไปจะแจกซ้ำได้อีกครั้ง')) onTune({playedLocations:null}); }}>↺ นับใหม่</button>
+            </div>
+          )}
           <button className="bs-btn bs-btn-gold" style={{marginTop:14}} disabled={count<4} onClick={onDeal}>
             {count>=4?'🎴 เริ่มเกม · แจกบทบาท':`รออีก ${4-count} คน…`}
           </button>
