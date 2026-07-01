@@ -36,6 +36,10 @@ html,body{ margin:0; padding:0; }
   margin:6px 0 2px; color:var(--parch); text-shadow:0 1px 0 #000, 0 0 22px rgba(201,162,75,.18); }
 .bs-mast .gild{ color:var(--gold-hi); }
 .bs-rule{ height:1px; width:64px; margin:10px auto 0; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.bs-brand{ font-family:'Trirong',serif; font-weight:700; font-size:27px; letter-spacing:.03em;
+  margin:6px 0 8px; color:var(--parch); text-shadow:0 1px 0 #000, 0 0 22px rgba(201,162,75,.18); }
+.bs-byline{ font-family:'Kanit',sans-serif; font-weight:400; font-size:11px; letter-spacing:.06em;
+  color:var(--parch-dim); opacity:.7; margin:4px 0 0; }
 
 .bs-panel{ background:linear-gradient(180deg,#2A1E15,#211710); border:1px solid #3D2C1E; border-radius:16px;
   box-shadow:0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04); padding:20px 18px; }
@@ -364,8 +368,9 @@ function App(){
 /* ======================= COMPONENTS ======================= */
 function Mast(){ return (
   <div className="bs-mast">
-    <p className="bs-eyebrow">เกมจับสายลับฉบับพระคัมภีร์</p>
-    <h1>ผู้<span className="gild">ยำเกรง</span></h1>
+    <h1 className="bs-brand">BIBLE <span className="gild">SPY FALL</span></h1>
+    <p className="bs-eyebrow">เกมจับสายลับ ฉบับพระคัมภีร์</p>
+    <p className="bs-byline">by HOPE Academy Ratchaburi</p>
     <div className="bs-rule"/>
   </div>
 ); }
@@ -649,7 +654,13 @@ function Game({room,L,me,isHost,answer,boardLocs,remaining,cardOpen,setCardOpen,
           <Ring remaining={remaining} total={room.minutes*60}/>
           <p className="bs-eyebrow">{over?'หมดเวลา! ลงมติแล้วกดเฉลย':'ผลัดกันถาม–ตอบ ตามหาสายลับ'}</p>
         </div>
-        {isHost && <button className="bs-btn bs-btn-gold" style={{marginTop:6}} onClick={onReveal}>เฉลย</button>}
+        {isHost && (
+          <div className="bs-btn-row" style={{marginTop:6}}>
+            <button className="bs-btn bs-btn-gold" onClick={onReveal}>เฉลย</button>
+            <button className="bs-btn bs-btn-ghost" style={{color:'#F2C9BE',borderColor:'rgba(176,67,47,.4)'}}
+              onClick={()=>{ if(window.confirm('ต้องการหยุดเกมและกลับไปที่ล็อบบี้หรือไม่? การ์ดที่แจกไปแล้วจะถูกล้าง')) onBackLobby(); }}>⏹ หยุดเกม</button>
+          </div>
+        )}
         {!isHost && over && <p className="bs-note" style={{margin:'6px 0 0'}}>⏳ รอหัวหน้าห้องกดเฉลย…</p>}
       </div>
 
