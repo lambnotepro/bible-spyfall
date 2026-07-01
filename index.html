@@ -630,7 +630,7 @@ function Game({room,L,me,isHost,answer,boardLocs,remaining,cardOpen,setCardOpen,
               return (
                 <li key={p.id} className={p.isSpy?'spy':''}>
                   <span className="seatn">{(p.seat??i)+1}</span>
-                  <span className="rn">{p.name} · {p.isSpy?'🕶️ คนแปลกหน้า':(role?`${role.e} ${role.n}`:'—')}</span>
+                  <span className="rn">{p.name} · {p.isSpy?'🕶️ SPY':(role?`${role.e} ${role.n}`:'—')}</span>
                   {p.isSpy&&<span className="badge">สายลับ</span>}
                 </li>
               );
@@ -680,7 +680,7 @@ function Game({room,L,me,isHost,answer,boardLocs,remaining,cardOpen,setCardOpen,
           {isSpy ? (
             <div className="bs-cardwrap"><div className="bs-card">
               <RoleArt img={answer ? answer.id+'/16.webp' : null} emoji="🕶️" spy/>
-              <div className="bs-plate"><b>คนแปลกหน้า</b></div>
+              <div className="bs-plate"><b>SPY</b></div>
               <div className="heart"><small>ความในใจ</small>“{me.spyThought||'...'}”</div>
               <p className="bs-mission">ภารกิจ: เนียนให้รอด แล้วทายว่าที่นี่คือที่ไหน</p>
             </div></div>
