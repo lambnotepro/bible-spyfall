@@ -212,7 +212,7 @@ const LS_UID   = 'bsf_uid';
 const DIFFS = {
   easy:  { label:'ง่าย',    ic:'🕯️', desc:'หรี่แสงฝั่งพันธสัญญาที่ไม่มีคำตอบ — ช่วยสายลับเดาง่ายขึ้น' },
   hard:  { label:'ยาก',    ic:'🌑', desc:'ทั้งสองฝั่งสว่างเท่ากัน ไม่มีใบ้พันธสัญญา — สายลับต้องเดาเอง' },
-  event: { label:'อีเวนต์', ic:'🎲', desc:'คละเรื่องจากทุกชุดตรา ฝั่งละสูงสุด 10 สถานที่ — บอร์ดใหญ่ ท้าทายสุด' },
+  event: { label:'อีเวนต์', ic:'🎲', desc:'คละเรื่องจากทุกชุดตรา ฝั่งละสูงสุด 7 สถานที่ — บอร์ดใหญ่ ท้าทายสุด' },
 };
 
 /* ---------- helpers ---------- */
@@ -314,8 +314,8 @@ function App(){
     if(room.difficulty==='event'){
       const rd=readyAll(L);
       let pool=rd.filter(l=>!avoid[l.id]); if(!pool.length) pool=rd;
-      const ot=shuffle(pool.filter(l=>l.testament==='OT')).slice(0,10);
-      const nt=shuffle(pool.filter(l=>l.testament==='NT')).slice(0,10);
+      const ot=shuffle(pool.filter(l=>l.testament==='OT')).slice(0,7);
+      const nt=shuffle(pool.filter(l=>l.testament==='NT')).slice(0,7);
       const board=[...ot,...nt];
       if(!board.length){ setErr('ยังไม่มีสถานที่พร้อมเล่นสำหรับโหมดอีเวนต์'); return; }
       answer=pick(board); boardIds=board.map(l=>l.id);
