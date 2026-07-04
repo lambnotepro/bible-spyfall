@@ -562,7 +562,16 @@ function Lobby({code,room,L,isHost,uid,onDeal,onLeave,onTune,err}){
           ) : (
             <span className="bs-chip">{d.ic} {d.label}</span>
           )}
-          <span className="bs-chip">{setName||'-'}</span>
+          {isHost && room.difficulty!=='event' ? (
+            <select className="bs-chip-select" value={room.setId||'s1'}
+              onChange={e=>onTune({setId:e.target.value})}>
+              {(L.sets||[]).filter(s=>(s.locations||[]).some(l=>l.ready)).map(s=>(
+                <option key={s.id} value={s.id}>{s.emoji} {s.name}</option>
+              ))}
+            </select>
+          ) : (
+            <span className="bs-chip">{setName||'-'}</span>
+          )}
           <span className="bs-chip">👥 {count} คน</span>
         </div>
         <ul className="bs-players">
