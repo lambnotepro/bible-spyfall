@@ -168,6 +168,13 @@ html,body{ margin:0; padding:0; }
 .bs-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-family:'Kanit'; font-size:12px; color:var(--parch-dim); margin-bottom:14px; flex-wrap:wrap; }
 .bs-chip{ font-family:'Kanit'; font-size:12px; color:var(--gold-hi); background:rgba(201,162,75,.1);
   border:1px solid rgba(201,162,75,.25); padding:4px 11px; border-radius:20px; }
+.bs-chip-select{ font-family:'Kanit'; font-size:12px; font-weight:600; color:var(--gold-hi); background:rgba(201,162,75,.16);
+  border:1px solid var(--gold-deep); padding:4px 26px 4px 11px; border-radius:20px; cursor:pointer; outline:none;
+  -webkit-appearance:none; -moz-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23EAC976'><path d='M5.5 7.5l4.5 4.5 4.5-4.5' stroke='%23EAC976' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat; background-position:right 8px center; background-size:11px; }
+.bs-chip-select:hover{ border-color:var(--gold-hi); }
+.bs-chip-select option{ background:#1C140D; color:var(--parch); }
 .bs-note{ font-size:12px; color:var(--parch-dim); line-height:1.5; text-align:center; margin-top:12px; }
 .bs-verse{ text-align:center; font-family:'Trirong',serif; font-style:italic; font-size:13px; color:var(--gold); opacity:.65; margin-top:18px; }
 .bs-back{ background:none; border:none; color:var(--parch-dim); font-family:'Kanit'; font-size:13px; cursor:pointer;
@@ -547,7 +554,14 @@ function Lobby({code,room,L,isHost,uid,onDeal,onLeave,onTune,err}){
         <p className="bs-note" style={{margin:'0 0 4px'}}>รหัสห้อง — บอกเพื่อน ๆ ให้ใส่เพื่อเข้าห้อง</p>
         <div className="bs-codebig">{code}</div>
         <div style={{display:'flex',gap:8,justifyContent:'center',marginTop:10,flexWrap:'wrap'}}>
-          <span className="bs-chip">{d.ic} {d.label}</span>
+          {isHost ? (
+            <select className="bs-chip-select" value={room.difficulty||'easy'}
+              onChange={e=>{ const nd=e.target.value; const patch={difficulty:nd}; if(nd!=='event' && !room.setId) patch.setId='s1'; onTune(patch); }}>
+              {Object.keys(DIFFS).map(k=>(<option key={k} value={k}>{DIFFS[k].ic} {DIFFS[k].label}</option>))}
+            </select>
+          ) : (
+            <span className="bs-chip">{d.ic} {d.label}</span>
+          )}
           <span className="bs-chip">{setName||'-'}</span>
           <span className="bs-chip">👥 {count} คน</span>
         </div>
