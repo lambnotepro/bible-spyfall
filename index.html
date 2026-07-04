@@ -103,6 +103,7 @@ html,body{ margin:0; padding:0; }
 .bs-wing.dim{ opacity:.20; filter:grayscale(.6) brightness(.7); }
 .bs-wing.ot.live{ border-color:var(--ot); box-shadow:0 0 22px rgba(182,85,47,.18); }
 .bs-wing.nt.live{ border-color:var(--nt); box-shadow:0 0 22px rgba(94,154,140,.18); }
+.bs-wing li.played{ text-decoration:line-through; text-decoration-color:var(--danger); text-decoration-thickness:2px; opacity:.45!important; }
 
 /* lobby */
 .bs-codebig{ text-align:center; font-family:'Kanit'; font-weight:700; font-size:50px; letter-spacing:.22em;
@@ -397,7 +398,7 @@ function RoleArt({img,emoji,spy}){
   );
 }
 
-function Board({locs,live}){
+function Board({locs,live,played}){
   const ot=locs.filter(l=>l.testament==='OT');
   const nt=locs.filter(l=>l.testament==='NT');
   const wing=(side,list)=>{
@@ -406,7 +407,7 @@ function Board({locs,live}){
       <div className={`bs-wing ${side.toLowerCase()} ${isLive?'live':''} ${dim?'dim':''}`}>
         <h4>{side==='OT'?'พันธสัญญาเดิม':'พันธสัญญาใหม่'}</h4>
         <ul>{list.length?list.map(l=>(
-          <li key={l.id} style={{opacity:l.ready?1:.42}}>
+          <li key={l.id} className={played&&played[l.id]?'played':''} style={{opacity:l.ready?1:.42}}>
             <span className="e">{l.emoji}</span>{l.name}
             {!l.ready&&<span style={{marginLeft:'auto',fontSize:11}}>🔒</span>}
           </li>
@@ -725,7 +726,7 @@ function Game({room,L,me,isHost,answer,boardLocs,remaining,cardOpen,setCardOpen,
             {live? <>คำตอบอยู่ใน<b style={{color:answer.testament==='OT'?'var(--ot)':'var(--nt)'}}>{answer.testament==='OT'?' พันธสัญญาเดิม':' พันธสัญญาใหม่'}</b></>
                  : 'โหมดนี้ทั้งสองฝั่งสว่าง — ไม่มีใบ้พันธสัญญา'}
           </p>
-          <Board locs={boardLocs} live={live}/>
+          <Board locs={boardLocs} live={live} played={room.playedLocations}/>
         </div>
       )}
 
